@@ -29,10 +29,9 @@ public class Date<T extends Dictionary> extends Ymd {
         return dict.get(y);
     }
 
-    public Ymd addition(int no) throws OutOfBoundError {
-        if (no == 0) {
-            return new Ymd(y, m, d);
-        }
+    public Date<T> addition(int no) throws OutOfBoundError, MonthExceededError, DayExceededError {
+        if (no == 0)
+            return new Date<T>(new Ymd(y, m, d), dict);
 
         int y = this.y;
         int m = this.m;
@@ -82,13 +81,12 @@ public class Date<T extends Dictionary> extends Ymd {
                 d += no;
             }
         }
-        return new Ymd(y, m, d);
+        return new Date<T>(new Ymd(y, m, d), dict);
     }
 
-    public Ymd difference(int no) throws OutOfBoundError {
-        if (no == 0) {
-            return new Ymd(y, m, d);
-        }
+    public Date<T> difference(int no) throws OutOfBoundError, MonthExceededError, DayExceededError {
+        if (no == 0)
+            return new Date<T>(new Ymd(y, m, d), dict);
 
         int y = this.y;
         int m = this.m;
@@ -138,7 +136,7 @@ public class Date<T extends Dictionary> extends Ymd {
             }
 
         }
-        return new Ymd(y, m, d);
+        return new Date<T>(new Ymd(y, m, d), dict);
     }
 
     public int difference(Ymd sub) throws OutOfBoundError {
@@ -212,6 +210,11 @@ public class Date<T extends Dictionary> extends Ymd {
             throw new MonthExceededError();
         if (d>dict.get(y, m))
             throw new DayExceededError();
+    }
+
+    public <M extends Dictionary>
+    Date<M> convertTo(M z) throws OutOfBoundError, MonthExceededError, DayExceededError {
+        return new Date<M>(z.min(), z).addition(totalDays());
     }
 
 }
