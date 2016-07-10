@@ -1,24 +1,10 @@
-package nc;
+package patro;
 
 public class Ymd {
 
     protected int y;
     protected int m;
     protected int d;
-
-    public Ymd() {
-        y = 0;
-        m = 0;
-        d = 0;
-    }
-
-    public Ymd(String text) {
-        // y-m-d
-        String[] str = text.split("-");
-        y = Integer.parseInt(str[0]);
-        m = Integer.parseInt(str[1]);
-        d = Integer.parseInt(str[2]);
-    }
 
     public Ymd(int y, int m, int d) {
         this.y = y;

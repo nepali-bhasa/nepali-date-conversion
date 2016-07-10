@@ -1,7 +1,8 @@
-package nc;
+package patro;
 
-public class Helper {
+public class Nepalify {
 
+    // Converts the index into corresponding month name
     public static String mahina(int i, boolean nepali) throws OutOfBoundError {
         if(i<=0 || i>12)
             throw new OutOfBoundError();
@@ -17,6 +18,7 @@ public class Helper {
         return nepali?n[i-1]:e[i-1];
     }
 
+    // Converts the index into correspoinding name
     public static String bar(int i, boolean nepali) throws OutOfBoundError {
         if(i<=0 || i>7)
             throw new OutOfBoundError();
@@ -31,7 +33,8 @@ public class Helper {
         return nepali?n[i-1]:e[i-1];
     }
 
-    public static String anka(int x, boolean nepali, int space) {
+    // Converts the english number into nepali representation
+    public static String anka(int x, boolean nepali, int digits) {
         String[] e = {
             "0","1","2","3","4","5","6","7","8","9"
         };
@@ -51,7 +54,7 @@ public class Helper {
             word = fmt[i%10]+word;
 
         // Padding output with extra zeros
-        int fill = space-((int)Math.log10(x)+1);
+        int fill = digits-((int)Math.log10(x)+1);
         for (int i=0; i< fill;i++)
             word = fmt[0] + word;
         return word;

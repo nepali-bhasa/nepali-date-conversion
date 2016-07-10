@@ -1,4 +1,4 @@
-package nc;
+package patro;
 
 public class Bs implements Dictionary {
 

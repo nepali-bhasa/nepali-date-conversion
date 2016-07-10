@@ -1,4 +1,4 @@
-package nc;
+package patro;
 
 public class Date<T extends Dictionary> extends Ymd {
 
@@ -13,10 +13,12 @@ public class Date<T extends Dictionary> extends Ymd {
         totalDays = difference(dict.min());
     }
 
+    // return the total no. of days from the minimum date available
     public int totalDays() {
         return totalDays;
     }
 
+    // return the week number
     public int week() {
         return (totalDays+6)%7+1;
     }
@@ -200,11 +202,13 @@ public class Date<T extends Dictionary> extends Ymd {
         return sign * no;
     }
 
+    // Check if the date exceed the minimum and maximum boundary
     protected void checkBounds() throws OutOfBoundError {
         if (this.isGreaterThan(dict.max()) || this.isLessThan(dict.min()))
             throw new OutOfBoundError();
     }
 
+    // Check if the date is valid or not
     protected void validate() throws OutOfBoundError, MonthExceededError, DayExceededError{
         if (m>12)
             throw new MonthExceededError();
@@ -215,6 +219,11 @@ public class Date<T extends Dictionary> extends Ymd {
     public <M extends Dictionary>
     Date<M> convertTo(M z) throws OutOfBoundError, MonthExceededError, DayExceededError {
         return new Date<M>(z.min(), z).addition(totalDays());
+    }
+
+    public <M extends Dictionary>
+    Date<M> firstDayOfMonthIn(M z) throws OutOfBoundError, MonthExceededError, DayExceededError {
+        return new Date<T>(new Ymd(year(), month(), 1), dict).convertTo(z);
     }
 
 }
