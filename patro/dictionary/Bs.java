@@ -111,7 +111,7 @@ public class Bs implements Dictionary {
     public int get(int y, int m) {
         assertMonth(m);
         assertYear(y);
-        return data[y - min.year()][m - 1];
+        return Bs.data[y - min.year()][m - 1];
     }
 
     @Override
@@ -122,12 +122,12 @@ public class Bs implements Dictionary {
 
     @Override
     public Ymd max() {
-        return max;
+        return Bs.max;
     }
 
     @Override
     public Ymd min() {
-        return min;
+        return Bs.min;
     }
 
     private static void assertMonth(int m) {
@@ -136,7 +136,7 @@ public class Bs implements Dictionary {
     }
 
     private static void assertYear(int y) {
-        if (y > max.year() || y < min.year())
+        if (y > Bs.max.year() || y < Bs.min.year())
             throw new OutOfBoundError();
     }
 

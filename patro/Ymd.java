@@ -10,7 +10,7 @@ public class Ymd {
     protected int d;
 
     public String toString() {
-        return String.format("%1$d-%2$02d-%3$02d", y, m, d);
+        return String.format("%1$d-%2$02d-%3$02d", this.y, this.m, this.d);
     }
 
     // yyyy-mm-dd format
@@ -30,38 +30,38 @@ public class Ymd {
     }
 
     public Ymd(Ymd ymd) {
-        y = ymd.y;
-        m = ymd.m;
-        d = ymd.d;
+        this.y = ymd.y;
+        this.m = ymd.m;
+        this.d = ymd.d;
     }
 
     public int year() {
-        return y;
+        return this.y;
     }
 
     public int month() {
-        return m;
+        return this.m;
     }
 
     public int day() {
-        return d;
+        return this.d;
     }
 
     public boolean isEqual(Ymd ymd) {
-        return (y == ymd.y) && (m == ymd.m) && (d == ymd.d);
+        return (this.y == ymd.y) && (this.m == ymd.m) && (this.d == ymd.d);
     }
 
     public boolean isNotEqual(Ymd ymd) {
-        return ! isEqual(ymd);
+        return !isEqual(ymd);
     }
 
     public boolean isLessThan(Ymd ymd) {
-        return (y < ymd.y) || (y == ymd.y && m < ymd.m) ||
-               (y == ymd.y && m == ymd.m && d < ymd.d);
+        return (this.y < ymd.y) || (this.y == ymd.y && this.m < ymd.m) ||
+               (this.y == ymd.y && this.m == ymd.m && this.d < ymd.d);
     }
 
     public boolean isGreaterThan(Ymd ymd) {
-        return ! isLessThan(ymd);
+        return !isLessThan(ymd);
     }
 
     public boolean isLessThanOrEqual(Ymd ymd) {

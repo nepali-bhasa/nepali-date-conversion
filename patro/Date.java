@@ -15,25 +15,25 @@ public class Date<T extends Dictionary> extends Ymd {
     public Date(String ymd, T dict) {
         super(ymd);
         this.dict = dict;
+        checkConversionBounds();
         checkBounds();
-        validate();
-        totalDays = difference(dict.min());
+        this.totalDays = difference(dict.min());
     }
 
     public Date(int y, int m, int d, T dict) {
         super(y, m, d);
         this.dict = dict;
-        checkBounds();
-        validate();
-        totalDays = difference(dict.min());
+        this.checkConversionBounds();
+        this.checkBounds();
+        this.totalDays = difference(dict.min());
     }
 
     public Date(Ymd ymd, T dict) {
         super(ymd);
         this.dict = dict;
+        checkConversionBounds();
         checkBounds();
-        validate();
-        totalDays = difference(dict.min());
+        this.totalDays = difference(dict.min());
     }
 
     public int totalDays() {
@@ -42,24 +42,24 @@ public class Date<T extends Dictionary> extends Ymd {
 
     // get the week number using totalDays
     public int week() {
-        return (totalDays + 6) % 7 + 1;
+        return (this.totalDays + 6) % 7 + 1;
     }
 
     // get total number of days in current month
     public int daysInMonth() {
-        return dict.get(y, m);
+        return this.dict.get(this.y, this.m);
     }
 
     // get total number of days in current year
     public int daysInYear() {
-        return dict.get(y);
+        return this.dict.get(this.y);
     }
 
     // addition of number of days
-    public Date<T> addition(int no) {
+    public Date<T> addDays(int no) {
         // return a clone of itself
         if (no == 0) {
-            return new Date<T>(new Ymd(y, m, d), dict);
+            return new Date<T>(this.y, this.m, this.d, this.dict);
         }
 
         // local variables that can be changed
@@ -109,12 +109,12 @@ public class Date<T extends Dictionary> extends Ymd {
                 d += no;
             }
         }
-        return new Date<T>(new Ymd(y, m, d), dict);
+        return new Date<T>(y, m, d, this.dict);
     }
 
-    public Date<T> difference(int no) {
+    public Date<T> subtractDays(int no) {
         if (no == 0)
-            return new Date<T>(new Ymd(y, m, d), dict);
+            return new Date<T>(this.y, this.m, this.d, this.dict);
 
         int y = this.y;
         int m = this.m;
@@ -161,7 +161,7 @@ public class Date<T extends Dictionary> extends Ymd {
                 d = d - no;
             }
         }
-        return new Date<T>(new Ymd(y, m, d), dict);
+        return new Date<T>(y, m, d, this.dict);
     }
 
     public int difference(Ymd sub) {
@@ -233,28 +233,48 @@ public class Date<T extends Dictionary> extends Ymd {
         return sign * no;
     }
 
+    public Date<T> addYears(int no) {
+        int y = this.y + no;
+        int m = this.m;
+        // Fix overflown day
+        int d = Math.min(this.d, this.dict.get(y, m));
+
+        return new Date<T>(y, m, d, this.dict);
+    }
+
+    public Date<T> addMonths(int no) {
+        // NOTE: 'no' can be more than 12
+        int y = this.y + (this.m + no - 1) / 12;
+        int m = (this.m + no - 1) % 12 + 1;
+        // Fix overflown day
+        int d = Math.min(this.d, this.dict.get(y, m));
+
+        return new Date<T>(y, m, d, this.dict);
+    }
+
     // Check if the date exceed the minimum and maximum boundary
-    protected void checkBounds() {
-        if (this.isGreaterThan(dict.max()) || this.isLessThan(dict.min()))
+    protected void checkConversionBounds() {
+        if (this.isGreaterThan(this.dict.max()) ||
+                this.isLessThan(this.dict.min()))
             throw new OutOfBoundError();
     }
 
     // Check if the date is valid or not
-    protected void validate() {
-        if (m > 12)
+    protected void checkBounds() {
+        if (this.m > 12)
             throw new MonthExceededError();
-        if (d > dict.get(y, m))
+        if (this.d > dict.get(this.y, this.m))
             throw new DayExceededError();
     }
 
     public <M extends Dictionary>
     Date<M> convertTo(M z) {
-        return new Date<M>(z.min(), z).addition(totalDays());
+        return new Date<M>(z.min(), z).addDays(this.totalDays());
     }
 
     public <M extends Dictionary>
     Date<M> firstDayOfMonthIn(M z) {
-        return new Date<T>(new Ymd(year(), month(), 1), dict).convertTo(z);
+        return new Date<T>(this.y, this.m, 1, this.dict).convertTo(z);
     }
 
 }

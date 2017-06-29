@@ -21,7 +21,7 @@ public class Ad implements Dictionary {
     @Override
     public int get(int y, int m) {
         assertMonth(m);
-        return data[isLeapYear(y) ? 1 : 0][m - 1];
+        return Ad.data[isLeapYear(y) ? 1 : 0][m - 1];
     }
 
     @Override
@@ -33,12 +33,12 @@ public class Ad implements Dictionary {
 
     @Override
     public Ymd max() {
-        return max;
+        return Ad.max;
     }
 
     @Override
     public Ymd min() {
-        return min;
+        return Ad.min;
     }
 
     // validation for month

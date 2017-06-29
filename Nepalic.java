@@ -21,8 +21,123 @@ class Pair<A, B> {
 
 public class Nepalic {
 
+    public static void assertUnreachable(String expression) {
+        System.out.println("FAIL: [" + expression + "]");
+    }
+
+    public static void assertEqual(Object stringObject, String expectation, String expression) {
+        String reality = stringObject.toString();
+        if (reality.equals(expectation)) {
+            // System.out.print("PASS: [" + expression + "]    ");
+            // System.out.println(reality);
+        } else {
+            System.out.print("FAIL: [" + expression + "]    ");
+            System.out.println(reality + " != " + expectation);
+        }
+    }
+
     // main function that is invoked
     public static void main(String[] args) {
+        Ad ad = new Ad();
+        Bs bs = new Bs();
+
+        // Test overflow error
+        try {
+            Date<Bs> np1 = new Date<Bs>("2012-13-12", bs);
+            assertUnreachable("Month value is out of range");
+        } catch (Exception ex) {
+        }
+        try {
+            Date<Bs> np1 = new Date<Bs>(2012, 0, 12, bs);
+            assertUnreachable("Month value is out of range");
+        } catch (Exception ex) {
+        }
+        try {
+            Date<Bs> np1 = new Date<Bs>(2012, 0, -12, bs);
+            assertUnreachable("Day value is out of range");
+        } catch (Exception ex) {
+        }
+        try {
+            Date<Bs> np1 = new Date<Bs>("2012-12", bs);
+            assertUnreachable("Supplied date is not properly formatted");
+        } catch (Exception ex) {
+        }
+
+        // Test getDate<Bs>
+        {
+            Date<Bs> np = new Date<Bs>("2012-02-12", bs);
+            assertEqual(np, "2012-02-12", "getDate<Bs>");
+        }
+        {
+            Date<Bs> np = new Date<Bs>(2012, 2, 12, bs);
+            assertEqual(np, "2012-02-12", "getDate<Bs>");
+        }
+
+        // Test addYears, addMonths
+        {
+            Date<Bs> np = new Date<Bs>("2073-11-10", bs);
+            assertEqual(np.addYears(5), "2078-11-10", "addYears: no overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2073-12-31", bs);
+            assertEqual(np.addYears(5), "2078-12-30", "addYears: overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2073-12-31", bs);
+            assertEqual(np.addYears(5), "2078-12-30", "addYears: overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2073-11-30", bs);
+            assertEqual(np.addYears(1), "2074-11-30", "addYears: no overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2062-11-29", bs);
+            assertEqual(np.addYears(1), "2063-11-29", "addYears: no overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2073-11-10", bs);
+            assertEqual(np.addMonths(1), "2073-12-10", "addMonths: no overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2073-11-10", bs);
+            assertEqual(np.addMonths(2), "2074-01-10", "addMonths: no overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2073-11-10", bs);
+            assertEqual(np.addMonths(3), "2074-02-10", "addMonths: no overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2073-11-10", bs);
+            assertEqual(np.addMonths(13), "2074-12-10", "addMonths: no overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2058-05-31", bs);
+            assertEqual(np.addMonths(12), "2059-05-31", "addMonths: no overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2058-05-31", bs);
+            assertEqual(np.addMonths(16), "2059-09-30", "addMonths: overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2056-09-30", bs);
+            assertEqual(np.addMonths(24), "2058-09-29", "addMonths: overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2073-11-10", bs);
+            assertEqual(np.addMonths(14), "2075-01-10", "addMonths: no overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2073-11-30", bs);
+            assertEqual(np.addMonths(2), "2074-01-30", "addMonths: no overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2074-01-31", bs);
+            assertEqual(np.addMonths(7), "2074-08-29", "addMonths: overflow");
+        }
+        {
+            Date<Bs> np = new Date<Bs>("2074-04-32", bs);
+            assertEqual(np.addMonths(4), "2074-08-29", "addMonths: overflow");
+        }
 
         // Read date pairs
         List<Pair<String, String>> datePairs = new ArrayList<>();
@@ -38,10 +153,8 @@ public class Nepalic {
         } catch (Exception e) {
             System.out.println(e);
         }
-
+        // Check date conversion for every date in 20 years
         try {
-            Ad ad = new Ad();
-            Bs bs = new Bs();
             for (Pair<String, String> datePair : datePairs) {
 
                 String nepali = datePair.a;
@@ -50,9 +163,7 @@ public class Nepalic {
                 {
                     Date<Bs> a = new Date<Bs>(nepali, bs);
                     Date<Ad> b = a.convertTo(ad);
-                    if (!b.toString().equals(english)) {
-                        System.out.println(b.toString() + " is not " + english);
-                    }
+                    assertEqual(b, english, "convertToAD");
                 }
                 // Convert english to nepali
                 {
@@ -61,11 +172,14 @@ public class Nepalic {
                     if (!b.toString().equals(nepali)) {
                         System.out.println(b.toString() + " is not " + english);
                     }
+                    assertEqual(b, nepali, "convertToBS");
                 }
             }
         } catch (Exception e) {
             System.out.println(e);
         }
+
+        System.out.println("ALL TEST COMPLETE");
 
         /*
         try {
