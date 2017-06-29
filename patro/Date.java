@@ -1,11 +1,18 @@
 package patro;
 
+import patro.dictionary.Dictionary;
+import patro.error.OutOfBoundError;
+import patro.error.MonthExceededError;
+import patro.error.DayExceededError;
+
 public class Date<T extends Dictionary> extends Ymd {
 
     T dict;
+
+    // the total no. of days from the minimum date available
     protected int totalDays;
 
-    public Date(Ymd ymd, T dict) throws OutOfBoundError, MonthExceededError, DayExceededError {
+    public Date(String ymd, T dict) {
         super(ymd);
         this.dict = dict;
         checkBounds();
@@ -13,70 +20,89 @@ public class Date<T extends Dictionary> extends Ymd {
         totalDays = difference(dict.min());
     }
 
-    // return the total no. of days from the minimum date available
+    public Date(int y, int m, int d, T dict) {
+        super(y, m, d);
+        this.dict = dict;
+        checkBounds();
+        validate();
+        totalDays = difference(dict.min());
+    }
+
+    public Date(Ymd ymd, T dict) {
+        super(ymd);
+        this.dict = dict;
+        checkBounds();
+        validate();
+        totalDays = difference(dict.min());
+    }
+
     public int totalDays() {
         return totalDays;
     }
 
-    // return the week number
+    // get the week number using totalDays
     public int week() {
-        return (totalDays+6)%7+1;
+        return (totalDays + 6) % 7 + 1;
     }
 
-    public int daysInMonth() throws OutOfBoundError {
+    // get total number of days in current month
+    public int daysInMonth() {
         return dict.get(y, m);
     }
 
-    public int daysInYear() throws OutOfBoundError {
+    // get total number of days in current year
+    public int daysInYear() {
         return dict.get(y);
     }
 
-    public Date<T> addition(int no) throws OutOfBoundError, MonthExceededError, DayExceededError {
-        if (no == 0)
+    // addition of number of days
+    public Date<T> addition(int no) {
+        // return a clone of itself
+        if (no == 0) {
             return new Date<T>(new Ymd(y, m, d), dict);
+        }
 
+        // local variables that can be changed
         int y = this.y;
         int m = this.m;
         int d = this.d;
 
-        // Get number of days 'n' till end of year
+        // Get number of days 'n' till end of current year
+        // 1. days remaining in current month
         int n = dict.get(y, m) - d + 1;
+        // 2. days remaining in following months
         for (int i = m + 1; i <= 12; ++i)
             n += dict.get(y, i);
 
-        // If 'no' exceeds current year
+        // If 'no' exceeds number of days in current year
         if (n <= no) {
-
-            // Get year
+            // Increment year
             ++y;
             while (n + dict.get(y) <= no) {
                 n += dict.get(y);
                 ++y;
             }
-            // Get month
+            // Increment month
             m = 1;
             while (n + dict.get(y, m) <= no && m < 12 ) {
                 n += dict.get(y, m);
                 ++m;
             }
-            // Get day
+            // Increment day
             d = 1;
             d += no - n;
-
         } else {
-
             // Get number of days 'n' till end of month
             n = dict.get(y, m) - d + 1;
-
-            // If 'no' exceeds current month
-            if (n < no) {
-                // Get month
+            // If 'no' exceeds number of days in current month
+            if (n <= no) {
+                // Increment month
                 ++m;
                 while (n + dict.get(y, m) <= no) {
                     n += dict.get(y, m);
                     ++m;
                 }
-                // Get day
+                // Increment day
                 d = no - n + 1;
             } else {
                 // Get day
@@ -86,7 +112,7 @@ public class Date<T extends Dictionary> extends Ymd {
         return new Date<T>(new Ymd(y, m, d), dict);
     }
 
-    public Date<T> difference(int no) throws OutOfBoundError, MonthExceededError, DayExceededError {
+    public Date<T> difference(int no) {
         if (no == 0)
             return new Date<T>(new Ymd(y, m, d), dict);
 
@@ -95,64 +121,69 @@ public class Date<T extends Dictionary> extends Ymd {
         int d = this.d;
 
         // Get number of days 'n' till beginning of year
+        // 1. get number of days elapsed in current month
         int n = d;
+        // 2. get number of days elapsed in previous months
         for (int i = m - 1; i >= 1; --i)
             n += dict.get(y, i);
 
-        // If 'no' exceeds current year
+        // If 'no' exceeds number of days elapsed in current year
         if (n <= no ) {
-
-            // Get year
+            // Decrement year
             --y;
             while (n + dict.get(y) <= no) {
                 n += dict.get(y);
                 --y;
             }
-            // Get month
+            // Decrement month
             m = 12;
             while (n + dict.get(y, m) <= no && m > 1) {
                 n += dict.get(y, m);
                 --m;
             }
-            // Get date
+            // Decrement date
             d = dict.get(y, m) - (no - n);
-
         } else {
-
-            // Get number of days 'n' till beginning of month
+            // Get number of days elapsed in current month
             n = d;
-
-            // If 'no' exceeds current month
+            // If 'no' exceeds number of days elapsed in current month
             if (n <= no) {
-                // Get month
+                // Decrement month
                 --m;
                 while (n + dict.get(y, m) <= no) {
                     n += dict.get(y, m);
                     --m;
                 }
-                // Get date
+                // Decrement date
                 d = dict.get(y, m) - (no - n);
             } else {
                 // Get date
                 d = d - no;
             }
-
         }
         return new Date<T>(new Ymd(y, m, d), dict);
     }
 
-    public int difference(Ymd sub) throws OutOfBoundError {
+    public int difference(Ymd sub) {
         int sign = 1;
         int y, m, d;
         int y1, m1, d1;
 
         if (this.isGreaterThan(sub)) {
-            y = this.y; m = this.m; d = this.d;
-            y1 = sub.y; m1 = sub.m; d1 = sub.d;
+            y = this.y;
+            m = this.m;
+            d = this.d;
+            y1 = sub.y;
+            m1 = sub.m;
+            d1 = sub.d;
             sign = 1;
         } else {
-            y1 = this.y; m = this.m; d = this.d;
-            y = sub.y; m1 = sub.m; d1 = sub.d;
+            y1 = this.y;
+            m = this.m;
+            d = this.d;
+            y = sub.y;
+            m1 = sub.m;
+            d1 = sub.d;
             sign = -1;
         }
 
@@ -203,26 +234,26 @@ public class Date<T extends Dictionary> extends Ymd {
     }
 
     // Check if the date exceed the minimum and maximum boundary
-    protected void checkBounds() throws OutOfBoundError {
+    protected void checkBounds() {
         if (this.isGreaterThan(dict.max()) || this.isLessThan(dict.min()))
             throw new OutOfBoundError();
     }
 
     // Check if the date is valid or not
-    protected void validate() throws OutOfBoundError, MonthExceededError, DayExceededError{
-        if (m>12)
+    protected void validate() {
+        if (m > 12)
             throw new MonthExceededError();
-        if (d>dict.get(y, m))
+        if (d > dict.get(y, m))
             throw new DayExceededError();
     }
 
     public <M extends Dictionary>
-    Date<M> convertTo(M z) throws OutOfBoundError, MonthExceededError, DayExceededError {
+    Date<M> convertTo(M z) {
         return new Date<M>(z.min(), z).addition(totalDays());
     }
 
     public <M extends Dictionary>
-    Date<M> firstDayOfMonthIn(M z) throws OutOfBoundError, MonthExceededError, DayExceededError {
+    Date<M> firstDayOfMonthIn(M z) {
         return new Date<T>(new Ymd(year(), month(), 1), dict).convertTo(z);
     }
 

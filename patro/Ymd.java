@@ -1,10 +1,27 @@
 package patro;
+import patro.error.BadFormatError;
+
+import java.lang.String;
 
 public class Ymd {
 
     protected int y;
     protected int m;
     protected int d;
+
+    public String toString() {
+        return String.format("%1$d-%2$02d-%3$02d", y, m, d);
+    }
+
+    // yyyy-mm-dd format
+    public Ymd(String date) {
+        String nepaliDate[] = date.split("-");
+        if (nepaliDate.length != 3)
+            throw new BadFormatError();
+        this.y = Integer.parseInt(nepaliDate[0]);
+        this.m = Integer.parseInt(nepaliDate[1]);
+        this.d = Integer.parseInt(nepaliDate[2]);
+    }
 
     public Ymd(int y, int m, int d) {
         this.y = y;
@@ -30,7 +47,7 @@ public class Ymd {
         return d;
     }
 
-    public boolean isEqual(Ymd ymd){
+    public boolean isEqual(Ymd ymd) {
         return (y == ymd.y) && (m == ymd.m) && (d == ymd.d);
     }
 
