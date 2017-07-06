@@ -1,9 +1,8 @@
-package patro;
-
-import patro.dictionary.Dictionary;
-import patro.error.OutOfBoundError;
-import patro.error.MonthExceededError;
-import patro.error.DayExceededError;
+package com.bsadutil.core;
+import com.bsadutil.dict.Dictionary;
+import com.bsadutil.error.OutOfBoundError;
+import com.bsadutil.error.MonthExceededError;
+import com.bsadutil.error.DayExceededError;
 
 public class Date<T extends Dictionary> extends Ymd {
 

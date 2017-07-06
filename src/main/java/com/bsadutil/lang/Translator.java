@@ -1,5 +1,5 @@
-package patro;
-import patro.error.OutOfBoundError;
+package com.bsadutil.lang;
+import com.bsadutil.error.OutOfBoundError;
 
 public class Translator {
 

@@ -1,5 +1,5 @@
-package patro;
-import patro.error.BadFormatError;
+package com.bsadutil.core;
+import com.bsadutil.error.BadFormatError;
 
 import java.lang.String;
 

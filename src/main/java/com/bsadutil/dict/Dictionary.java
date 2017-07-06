@@ -1,6 +1,6 @@
-package patro.dictionary;
-import patro.Ymd;
-import patro.error.OutOfBoundError;
+package com.bsadutil.dict;
+import com.bsadutil.core.Ymd;
+import com.bsadutil.error.OutOfBoundError;
 
 public interface Dictionary {
 

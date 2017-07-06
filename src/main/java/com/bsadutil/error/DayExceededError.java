@@ -1,4 +1,4 @@
-package patro.error;
+package com.bsadutil.error;
 
 public class DayExceededError extends RuntimeException {
 
